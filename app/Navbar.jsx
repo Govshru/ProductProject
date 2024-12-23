@@ -6,27 +6,28 @@ import CloseIcon from '@mui/icons-material/Close';
 import HomeIcon from '@mui/icons-material/Home';
 import InfoIcon from '@mui/icons-material/Info';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
-import Router from 'next/router';
+import { useCart } from '@/context/CartContext';
+
 import Link from 'next/link';
 
 const Navbar = () => {
+  const{cartCount}=useCart();
   // State to manage the open/close state of the sidebar
   const [isOpen, setIsOpen] = useState(false);
   
-  // Cart item count for the shopping cart indicator (Assume the value here for now)
-  const [cartItemCount, setCartItemCount] = useState(3); // example item count
 
-//   const handlenewProduct (){
-// const router=Router();
-// router.push
+  
 
-//   }
+
+
+
+
 
   return (
     <nav className="bg-black">
-      <div className="flex items-center justify-between px-8 sm:px-10 lg:px-16 w-full">
-        {/* Sidebar toggle button (mobile) */}
-        <div className="lg:hidden">
+      <div className="flex items-center justify-between px-8 sm:px-10 ">
+        {/* Sidebar toggle button  */}
+        <div >
           <IconButton
             onClick={() => setIsOpen(!isOpen)}
             sx={{
@@ -44,16 +45,12 @@ const Navbar = () => {
 
         {/* Logo */}
         <div className="flex-shrink-0">
-          <a href="/" className="text-white text-lg font-bold">NewLOGO</a>
+          <a href="/" className="text-white text-lg font-bold">LOGO</a>
         </div>
 
         {/* Navbar Links */}
         <div className="hidden lg:flex items-center space-x-4">
-         <div onClick={() =>{console.log  ("NewProduct") 
-          handlenewProduct()
-         }}   className="text-white">
-          NewProduct
-          </div> <a href="/" className="text-white hover:bg-white hover:text-black rounded-lg p-2">Home</a>
+          <Link href="/" className="text-white hover:bg-white hover:text-black rounded-lg p-2">Home</Link>
           <Link href="/Product" className="text-white hover:bg-white hover:text-black rounded-lg p-2">Product</Link>
           <Link href="/Contact" className="text-white hover:bg-white hover:text-black rounded-lg p-2">Contact</Link>
           <Link href="/Aboutus" className="text-white hover:bg-white hover:text-black rounded-lg p-2">About Us</Link>
@@ -61,14 +58,14 @@ const Navbar = () => {
 
         {/* Cart Icon */}
         <div className="relative">
-          <a href="/AddtoCart" className="text-white hover:bg-white hover:text-black rounded-lg p-2">
+          <Link href="/AddtoCart" className="text-white hover:bg-white hover:text-black rounded-lg p-2">
             <ShoppingCartIcon className="h-6 w-6" />
-            {cartItemCount > 0 && (
+            {cartCount > 0 && (
               <span className="absolute top-0 right-0 bg-red-500 text-white text-xs rounded-full px-1.5 py-0.5">
-                {cartItemCount}
+                {cartCount}
               </span>
             )}
-          </a>
+          </Link>
         </div>
       </div>
 
@@ -111,6 +108,7 @@ const Navbar = () => {
           </ListItem>
         </List>
       </Drawer>
+
     </nav>
   );
 }

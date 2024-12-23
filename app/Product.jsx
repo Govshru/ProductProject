@@ -1,50 +1,46 @@
-"use client"
-import React from 'react';
-import { Card, CardContent, Typography, CardActions ,Button} from "@mui/material";
-
-
-
-
+"use client";
+import React, { useState,useEffect } from 'react';
+import { Card, CardContent, Typography, CardActions, Button } from "@mui/material";
+import { useCart } from '@/context/CartContext';
+ import { useRouter } from 'next/navigation';
 
 
 const Product = ({ id, title, description }) => {
- 
   
+  const {addToCart}=useCart();
+  const router=useRouter();
   
-  
-  
+  const handleDetail=()=>{
+    
+    const product = { id, title, description };
+    console.log("Detail:", product);
+     router.push(`/Product/${id}`);
+
+  }
   const handleAdd = () => {
-    const product={id,title,description};
+    const product = { id, title, description };
     console.log("Adding to cart:", product);
-    addtoCart(product);
-    router.push('/AddtoCart')
+    addToCart(product);  // Add product to the cart
     
   };
 
-
-  
-
-  return (
+ return (
     <div>
-      <Card
-        sx={{
-          maxWidth: 350,
-          maxHeight:550,
-          display: "flex",
-          flexDirection: "column",
-          justifyContent: "space-between",
-        }}
-      >
+      <Card className="max-w-[550px] max-h-[550px] flex flex-col justify-between" >
         <CardContent>
-          <Typography variant="h4">{title}</Typography>
+          <Typography variant="h4" className="text-lg">{title}</Typography>
           <Typography>ID: {id}</Typography>
-          <Typography>Description: {description}</Typography>
+          <Typography className="text-sm">Description: {description}</Typography>
         </CardContent>
 
         <CardActions>
           {/* Add to Cart Button */}
-          <Button onClick={handleAdd}>Add to Cart</Button>
-          <Button  onClick={handleDetail}>Detail</Button>
+          <Button variant="contained" color="primary"  onClick={handleAdd}>
+            Add to Cart
+          </Button>
+          <Button variant="contained"  color="primary" onClick={handleDetail}>
+            View Details
+          </Button>
         </CardActions>
       </Card>
     </div>

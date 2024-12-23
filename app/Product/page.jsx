@@ -6,16 +6,14 @@ const Page = () => {
   const [products, setProducts] = useState([]); // State for products
   const [loading, setLoading] = useState(true); // State for loading
   const [error, setError] = useState(null); // State for errors
-  const [cart, setCart] = useState([]); // State for cart items
   const [currentPage, setCurrentPage] = useState(1); // State for current page
   const [totalPages, setTotalPages] = useState(1); // State for total pages
-  const productsPerPage = 5; // Number of products to show per page
-console.log("Productpage")
+  const productsPerPage = 8; // Number of products to show per page
+
   // Fetch the list of products for the current page
-  async function FetchlistofProducts() {
-    console.log("ProductNew");
+  async function FetchlistofProducts(page) {
     try {
-      const data = await fetch(`https://dummyjson.com/products`);
+      const data = await fetch(`https://dummyjson.com/products?limit=${productsPerPage}&skip=${(page - 1) * productsPerPage}`);
       const result = await data.json();
       setProducts(result.products); // The correct key is 'products'
       setTotalPages(Math.ceil(result.total / productsPerPage)); // Assuming the API returns a 'total' field for the total count of products
@@ -29,8 +27,8 @@ console.log("Productpage")
 
   // UseEffect to call the function when the component mounts or when the page changes
   useEffect(() => {
-    FetchlistofProducts();
-  }, []);
+    FetchlistofProducts(currentPage);
+  }, [currentPage]);
 
   // Handle loading state and errors
   if (loading) {
@@ -41,21 +39,21 @@ console.log("Productpage")
     return <div>{error}</div>;
   }
 
-  // Handle adding a product to the cart
-  const handleAddToCart = (product) => {
-    console.log("Product added to cart:", product);
-    setCart((prevCart) => {
-      // Check if the product is already in the cart
-      const isProductInCart = prevCart.some((item) => item.id === product.id);
-      if (isProductInCart) {
-        console.log("Product already in cart:", product);
-        return prevCart; // If product is already in cart, don't add it again
-      } else {
-        console.log("Adding product to cart:", product);
-        return [...prevCart, product]; // Add product to cart
-      }
-    });
-  };
+  // // Handle adding a product to the cart
+  // const handleAddToCart = (product) => {
+  //   console.log("Product added to cart:", product);
+  //   setCart((prevCart) => {
+  //     // Check if the product is already in the cart
+  //     const isProductInCart = prevCart.some((item) => item.id === product.id);
+  //     if (isProductInCart) {
+  //       console.log("Product already in cart:", product);
+  //       return prevCart; // If product is already in cart, don't add it again
+  //     } else {
+  //       console.log("Adding product to cart:", product);
+  //       return [...prevCart, product]; // Add product to cart
+  //     }
+  //   });
+  // };
 
   return (
     <div className="flex flex-col h-screen">
@@ -68,7 +66,7 @@ console.log("Productpage")
                 id={post.id}
                 title={post.title}
                 description={post.description}
-                handleAddToCart={handleAddToCart} // Passing the function as a prop
+                
               />
             </div>
           ))}
