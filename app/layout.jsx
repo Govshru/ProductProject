@@ -21,7 +21,7 @@ export const metadata = {
 
 export default function RootLayout({ children }) {
   return (
-    <CartProvider>
+    <CartProvider >
     <html lang="en">
       <head />
       <body

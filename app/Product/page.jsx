@@ -1,6 +1,8 @@
 "use client";
 import { useEffect, useState } from "react";
 import Product from "../Product";
+import { Box, Button } from "@mui/material";
+
 
 const Page = () => {
   const [products, setProducts] = useState([]); // State for products
@@ -8,12 +10,15 @@ const Page = () => {
   const [error, setError] = useState(null); // State for errors
   const [currentPage, setCurrentPage] = useState(1); // State for current page
   const [totalPages, setTotalPages] = useState(1); // State for total pages
+  const [searchQuery, setSearchQuery] = useState(""); // State for search query
+  const [selectedCategory, setSelectedCategory] = useState(""); // State for selected category
   const productsPerPage = 8; // Number of products to show per page
 
-  // Fetch the list of products for the current page
-  async function FetchlistofProducts(page) {
+  // Fetch the list of products for the current page with search and category filters
+  async function FetchlistofProducts(page, query = "", category = "") {
     try {
-      const data = await fetch(`https://dummyjson.com/products?limit=${productsPerPage}&skip=${(page - 1) * productsPerPage}`);
+      const url = `https://dummyjson.com/products?limit=${productsPerPage}&skip=${(page - 1) * productsPerPage}&search=${query}&category=${category}`;
+      const data = await fetch(url);
       const result = await data.json();
       setProducts(result.products); // The correct key is 'products'
       setTotalPages(Math.ceil(result.total / productsPerPage)); // Assuming the API returns a 'total' field for the total count of products
@@ -27,8 +32,8 @@ const Page = () => {
 
   // UseEffect to call the function when the component mounts or when the page changes
   useEffect(() => {
-    FetchlistofProducts(currentPage);
-  }, [currentPage]);
+    FetchlistofProducts(currentPage, searchQuery, selectedCategory);
+  }, [currentPage, searchQuery, selectedCategory]);
 
   // Handle loading state and errors
   if (loading) {
@@ -39,80 +44,85 @@ const Page = () => {
     return <div>{error}</div>;
   }
 
-  // // Handle adding a product to the cart
-  // const handleAddToCart = (product) => {
-  //   console.log("Product added to cart:", product);
-  //   setCart((prevCart) => {
-  //     // Check if the product is already in the cart
-  //     const isProductInCart = prevCart.some((item) => item.id === product.id);
-  //     if (isProductInCart) {
-  //       console.log("Product already in cart:", product);
-  //       return prevCart; // If product is already in cart, don't add it again
-  //     } else {
-  //       console.log("Adding product to cart:", product);
-  //       return [...prevCart, product]; // Add product to cart
-  //     }
-  //   });
-  // };
+  // Handle search input change
+  const handleSearchChange = (e) => {
+    setSearchQuery(e.target.value);
+    setCurrentPage(1); // Reset to first page when searching
+  };
+
+  // Handle category selection change
+  const handleCategoryChange = (e) => {
+    setSelectedCategory(e.target.value);
+    setCurrentPage(1); // Reset to first page when category changes
+  };
 
   return (
-    <div className="flex flex-col h-screen">
+    <Box className="flex flex-col bg-gray-100 h-screen">
+      {/* Filters Section */}
+      <Box className="p-4  space-y-4">
+        <Box className="flex space-x-4">
+          {/* Search Filter */}
+          <input
+            type="text"
+            value={searchQuery}
+            onChange={handleSearchChange}
+            placeholder="Search products"
+            className="px-4 py-2 border border-gray-300 rounded w-full sm:w-1/2"
+          />
+          
+          {/* Category Filter */}
+          <select
+            value={selectedCategory}
+            onChange={handleCategoryChange}
+            className="px-4 py-2 border border-gray-300 rounded"
+          >
+            <option value="">All Categories</option>
+            <option value="electronics">Electronics</option>
+            <option value="fashion">Fashion</option>
+            <option value="home">Home</option>
+            <option value="beauty">Beauty</option>
+            <option valuse="fragrance">Fragrance</option>
+            {/* Add more categories as needed */}
+          </select>
+        </Box>
+      </Box>
+
       {/* Product Section */}
-      <div className="flex-grow p-4 overflow-auto">
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+      <Box className="flex-grow p-4 overflow-auto">
+        <Box className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 bg-gray-100">
           {products.map((post) => (
-            <div key={post.id} className="product-item">
+            <Box key={post.id} className="product-item">
               <Product
                 id={post.id}
                 title={post.title}
                 description={post.description}
-                
               />
-            </div>
+            </Box>
           ))}
-        </div>
-      </div>
-
-
-      
-
-      {/* Cart Section
-      <div className="w-2/5 p-4 border-l border-gray-300">
-        <h3 className="text-xl font-semibold">Shopping Cart</h3>
-        {cart.length === 0 ? (
-          <p>Your cart is empty</p>
-        ) : (
-          <ul className="space-y-2">
-            {cart.map((item, index) => (
-              <li key={index} className="text-sm">
-                {item.title} - {item.description}
-              </li>
-            ))}
-          </ul>
-        )}
-      </div> */}
+        </Box>
+      </Box>
 
       {/* Pagination Section */}
-      <div className="flex justify-center items-center py-4 bg-gray-200 space-x-8">
-        <button
+      <Box className="flex justify-center items-center py-4  space-x-8">
+        <Button
           onClick={() => setCurrentPage((prevPage) => Math.max(prevPage - 1, 1))}
           disabled={currentPage === 1}
-           className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+          className="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600"
         >
           Previous
-        </button>
+        </Button>
         <span>
           Page {currentPage} of {totalPages}
         </span>
-        <button
+        <Button
           onClick={() => setCurrentPage((prevPage) => Math.min(prevPage + 1, totalPages))}
           disabled={currentPage === totalPages}
-          className="px-4 py-2 bg-blue-500 text-white rounded hover:bg:-blue-600"
+          className="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600"
         >
           Next
-        </button>
-      </div>
-    </div>
+        </Button>
+      </Box>
+    </Box>
   );
 };
 
